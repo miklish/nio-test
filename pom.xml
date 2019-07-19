@@ -1,0 +1,162 @@
+<project
+	xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.mikechristoff</groupId>
+	<artifactId>nio-test</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>Java NIO Server Test</name>
+
+	<properties>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+	</properties>	
+	
+	<build>  
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.6.0</version>
+				<executions>
+				
+				    <execution>
+				        <id>1</id>
+				        <goals>
+				            <goal>java</goal>
+				        </goals>
+				        <configuration>
+				            <mainClass>com.mikechristoff.niotest.NIOServerTest</mainClass>
+				        </configuration>
+				    </execution>	
+				    				
+				    <execution>
+				        <id>2</id>
+				        <goals>
+				            <goal>java</goal>
+				        </goals>
+				        <configuration>
+				            <mainClass>com.mikechristoff.niotest.NIOServerTest2</mainClass>
+				        </configuration>
+				    </execution>
+				    				
+				    <execution>
+				        <id>3</id>
+				        <goals>
+				            <goal>java</goal>
+				        </goals>
+				        <configuration>
+				            <mainClass>com.mikechristoff.niotest.NIOServerTest3</mainClass>
+				        </configuration>
+				    </execution>
+
+				    <execution>
+						<id>4</id>
+				    	<goals>
+				    		<goal>java</goal>
+				    	</goals>
+				    	<configuration>
+				    		<mainClass>com.mikechristoff.niotest.NIOServerTest4</mainClass>
+				    	</configuration>
+				    </execution>
+
+				    <execution>
+						<id>5</id>
+				    	<goals>
+				    		<goal>java</goal>
+				    	</goals>
+				    	<configuration>
+				    		<mainClass>com.mikechristoff.niotest.NIOServerTest5</mainClass>
+				    	</configuration>
+				    </execution>	
+				    
+				    <execution>
+						<id>6</id>
+				    	<goals>
+				    		<goal>java</goal>
+				    	</goals>
+				    	<configuration>
+				    		<mainClass>com.mikechristoff.niotest.NIOServerTest6</mainClass>
+				    	</configuration>
+				    </execution>
+
+				    <execution>
+						<id>7</id>
+				    	<goals>
+				    		<goal>java</goal>
+				    	</goals>
+				    	<configuration>
+				    		<mainClass>com.mikechristoff.niotest.NIOServerTest7</mainClass>
+				    	</configuration>
+				    </execution>
+				    
+				    <execution>
+						<id>8</id>
+				    	<goals>
+				    		<goal>java</goal>
+				    	</goals>
+				    	<configuration>
+				    		<mainClass>com.mikechristoff.niotest.NIOServerTest8</mainClass>
+				    	</configuration>
+				    </execution>
+				    
+				    <execution>
+						<id>9</id>
+				    	<goals>
+				    		<goal>java</goal>
+				    	</goals>
+				    	<configuration>
+				    		<mainClass>com.mikechristoff.niotest.NIOServerTest9</mainClass>
+				    	</configuration>
+				    </execution>
+
+				    <execution>
+						<id>10</id>
+				    	<goals>
+				    		<goal>java</goal>
+				    	</goals>
+				    	<configuration>
+				    		<mainClass>com.mikechristoff.niotest.NIOServerTest10</mainClass>
+				    	</configuration>
+				    </execution>	
+				    
+				    <execution>
+				        <id>dumbchump</id>
+				        <goals>
+				            <goal>java</goal>
+				        </goals>
+				        <configuration>
+				            <mainClass>com.mikechristoff.niotest.DumbChump</mainClass>
+				        </configuration>
+				    </execution>
+				    
+				</executions>	         
+	       </plugin>
+	   </plugins>  
+	 </build>	
+	 
+	<dependencies>
+		<dependency>
+		    <groupId>org.slf4j</groupId>
+		    <artifactId>slf4j-api</artifactId>
+		    <version>1.7.25</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.slf4j</groupId>
+		    <artifactId>slf4j-jdk14</artifactId>
+		    <version>1.7.25</version>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpcore -->
+		<dependency>
+		    <groupId>org.apache.httpcomponents</groupId>
+		    <artifactId>httpcore</artifactId>
+		    <version>4.4.9</version>
+		</dependency>
+									
+	</dependencies>	 
+		  
+</project>
