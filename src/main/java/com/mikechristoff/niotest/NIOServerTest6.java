@@ -25,19 +25,7 @@ import org.slf4j.LoggerFactory;
 // Selector Server
 public class NIOServerTest6 {
 	private static Logger logger;
-	
-	static {
-		try {
-			LogManager.getLogManager().readConfiguration(new FileInputStream("src//main//resources//logger.properties"));
-		} catch(FileNotFoundException e) {
-			System.out.println("Logger File Not Found : " + e.getMessage());
-			System.exit(-1);			
-		} catch(IOException e) {
-			System.out.println("Logger IO Error : " + e.getMessage());
-			System.exit(-2);			
-		}		
-		logger = LoggerFactory.getLogger(NIOServerTest6.class);	
-	}	
+
 
 	private static Map<SocketChannel, java.util.Queue<ByteBuffer>>
 		pendingData = new HashMap<>();
@@ -215,25 +203,36 @@ public class NIOServerTest6 {
 		etc.
 		*/ 		
 		
-		// SelectionKey.channel() returns the Channel that it was registered with
-		// In this case, it will be the original ServerSocketChannel
+		// - SelectionKey.channel() returns the Channel that it was registered with
+		// - Since we are handling an 'Accept' key, we know this must be a ServerSocketChannel
+		//   containing the new client socket
 		ServerSocketChannel ssc = (ServerSocketChannel) key.channel();
 		
 		// We use the original SSC to NON-BLOCKINGLY accept the new Socket (Channel)
-		SocketChannel sc = ssc.accept(); // nonblocking -- never null!
+		SocketChannel sc = ssc.accept(); // nonblocking and never null (we know it has a client socket waiting)
 		
 		// We similarly set the SocketChannel to be non-blocking
 		sc.configureBlocking(false);
 		
-		// now that we have the new SocketChannel, we
-		// * REGISTER IT WITH THE SAME SELECTOR THAT THE SERVERSOCKETCHANNEL 
-		// is using.
+		// now that we have the new SocketChannel, we must register it with the Selector.
+		// -- The SAME Selector That the original ServerSocketChannel is using.
+		// -- We can get this Selector from key.selector()
+		//
 		// We register it for READs Only at this point
-		// Q: Why not reg it for reads AND writes
+		// -- For this socket, we want to know if anything is ready for reading
+		// -- E.g.: The moment anybody writes something to this socket, we want to be ready to read it
+		// Q: Why not reg it for reads AND writes?
+        // A: Because we don't care about whether the SocketChannel is ready for WRITEs until after
+        //    we have actually READ something
 		sc.register(key.selector(), SelectionKey.OP_READ);
 		
 		// recall: LinkedList implements Queue
-		pendingData.put(sc, new LinkedList<>());
+		
+		// Here, we prepare the new socket with a place to write pending data to
+        // E.q.: We create a LinkedList that can hold ByteBuffers, keyed by the SocketChannel
+		//
+		// pendingData is a Map<SocketChannel, java.util.Queue<ByteBuffer>>
+		pendingData.put(sc, new LinkedList<>());			// recall: LinkedList implements Queue
 	}	
 	
 	// Here we READ the input and WRITE our response
@@ -250,6 +249,9 @@ public class NIOServerTest6 {
 			pendingData.remove(sc);
 			return;
 		}
+		
+		// Note: We do not need to check for read == 0, since this would not have been called if
+		//       there was no data to read (or the socket had closed)
 
 		// PREPARE FOR READING from BUF into CHANNEL
 		
@@ -287,10 +289,16 @@ public class NIOServerTest6 {
 		// get the order list of pending data buffers
 		// NOTE: Last time we used these buffers, we WROTE to them
 		//       BUT: I assume the value of limit() and position are still the
-		//            the same as they were right after buf.flip(); E.g.:
+		//            the same as they were right after buf.flip();                 <--- position will not be the same
+        //                                                                               since it 0 after buf.flip()
+        //            E.g.:
 		//            They are still in the equivalent of READ mode
 		//            SINCE our processing just changed values in-place and
 		//            didn't change the size of the data.
+        //
+        // NOTE 2 :   The fact we deal with these questions is because we are using the same ByteBuffers for
+        //            READs and WRITEs
+        //            It may make sense to have separate READ and WRITE buffers
 		Queue<ByteBuffer> queue = pendingData.get(sc);
 		
 		ByteBuffer buf = null;
@@ -325,9 +333,27 @@ public class NIOServerTest6 {
 								// poll() is identical to remove(), except that it 
 								// returns null if called on an empty Queue, rather
 								// than throwing an Exception
-			
-			sc.register(key.selector(), SelectionKey.OP_READ);
 		}
-	}	
+  
+		// - Once all of the data that came in with the last READ state, is written to the client socket,
+        //   THEN we switch back to READ
+        // - NOTE: This means that, WRITEs block new READs on this channel until all the old read-data has been written
+        //         to the client socket
+        sc.register(key.selector(), SelectionKey.OP_READ);
+	}
+	
+	
+	static {
+		try {
+			LogManager.getLogManager().readConfiguration(new FileInputStream("src//main//resources//logger.properties"));
+		} catch(FileNotFoundException e) {
+			System.out.println("Logger File Not Found : " + e.getMessage());
+			System.exit(-1);
+		} catch(IOException e) {
+			System.out.println("Logger IO Error : " + e.getMessage());
+			System.exit(-2);
+		}
+		logger = LoggerFactory.getLogger(NIOServerTest6.class);
+	}
 }
 

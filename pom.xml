@@ -88,7 +88,7 @@
 				    		<goal>java</goal>
 				    	</goals>
 				    	<configuration>
-				    		<mainClass>com.mikechristoff.niotest.NIOServerTest7</mainClass>
+				    		<mainClass>com.mikechristoff.niotest.ZNIOServerTest7</mainClass>
 				    	</configuration>
 				    </execution>
 				    
@@ -128,7 +128,7 @@
 				            <goal>java</goal>
 				        </goals>
 				        <configuration>
-				            <mainClass>com.mikechristoff.niotest.DumbChump</mainClass>
+				            <mainClass>com.mikechristoff.niotest.LoadTester</mainClass>
 				        </configuration>
 				    </execution>
 				    

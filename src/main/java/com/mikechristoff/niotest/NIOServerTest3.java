@@ -19,49 +19,44 @@ import org.slf4j.LoggerFactory;
 
 public class NIOServerTest3 {
 	private static Logger logger;
+
+	public static void main(String[] args) throws IOException {
+		
+		final ServerSocket ss = new ServerSocket(8080);
+		
+		
+		/**
+		 * - Creates new threads lazily
+		 * - unbounded queue
+		 * - jobs with no thread, wait in queue
+		 *
+		 * Creates a thread pool that reuses a fixed number of threads operating off a shared unbounded queue.
+		 * At any point, at most nThreads threads will be active processing tasks. If additional tasks are submitted
+		 * when all threads are active, they will wait in the queue until a thread is available. If any thread
+		 * terminates due to a failure during execution prior to shutdown, a new one will take its place if needed to
+		 * execute subsequent tasks. The threads in the pool will exist until it is explicitly shutdown.
+		 */
+		ExecutorService pool = Executors.newFixedThreadPool(1000);
+		
+		while(true) {
+			final Socket s = ss.accept();
+			logger.info("Connection from " + s);
+			
+			pool.submit(() -> Util.process(s));
+		}
+	}
+
 	
 	static {
 		try {
 			LogManager.getLogManager().readConfiguration(new FileInputStream("src//main//resources//logger.properties"));
 		} catch(FileNotFoundException e) {
 			System.out.println("Logger File Not Found : " + e.getMessage());
-			System.exit(1);			
+			System.exit(1);
 		} catch(IOException e) {
 			System.out.println("Logger IO Error : " + e.getMessage());
-			System.exit(2);			
-		}		
-		logger = LoggerFactory.getLogger(Util.class);	
-	}	
-
-	public static void main(String[] args) throws IOException {
-		
-		final ServerSocket ss = new ServerSocket(8080);		
-		
-//1		ExecutorService pool = Executors.newCachedThreadPool().;
-		
-//2		ExecutorService pool = new java.util.concurrent.ThreadPoolExecutor(
-//				0,
-//				//Integer.MAX_VALUE,	// max threads
-//				1,					// max threads
-//				60L,					// stick around for x TimeUnits before reused
-//				java.util.concurrent.TimeUnit.SECONDS,
-//				new java.util.concurrent.SynchronousQueue<Runnable>(),
-//				new java.util.concurrent.ThreadPoolExecutor.CallerRunsPolicy());
-
-		ExecutorService pool = Executors.newFixedThreadPool(1);
-		
-		while(true) {
-			final Socket s = ss.accept();
-			logger.info("Connection from " + s);
-			
-			/*
-			if(!Util.process(ss, s)) {
-				ss.close();
-				break;
-			}
-			*/
-			
-			pool.submit(() -> Util.process(s));
+			System.exit(2);
 		}
+		logger = LoggerFactory.getLogger(Util.class);
 	}
 }

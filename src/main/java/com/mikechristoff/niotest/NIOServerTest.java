@@ -11,6 +11,11 @@ public class NIOServerTest {
 	public static void main(String[] args) throws IOException {
 		ServerSocket ss = new ServerSocket(8080);
 		boolean running = true;
+		
+		/**
+		 * Issue: Single-threaded: One connection processed before subsequent connection
+		 *        can be processed.
+		 */
 		while(true) {
 			Socket s = ss.accept();
 			try (
